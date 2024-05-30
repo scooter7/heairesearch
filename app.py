@@ -15,7 +15,7 @@ auth = tweepy.OAuthHandler(twitter_api_key, twitter_api_secret)
 auth.set_access_token(twitter_access_token, twitter_access_token_secret)
 twitter_api = tweepy.API(auth)
 
-linkedin_api = Linkedin(cookies=linkedin_cookies)
+linkedin_api = Linkedin(username=None, password=None, cookies=linkedin_cookies)
 
 googlenews = GoogleNews()
 
