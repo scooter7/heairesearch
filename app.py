@@ -4,7 +4,6 @@ import tweepy
 from linkedin_api import Linkedin
 import json
 
-# Access secrets
 twitter_api_key = st.secrets["twitter"]["api_key"]
 twitter_api_secret = st.secrets["twitter"]["api_secret"]
 twitter_access_token = st.secrets["twitter"]["access_token"]
@@ -12,31 +11,24 @@ twitter_access_token_secret = st.secrets["twitter"]["access_token_secret"]
 
 linkedin_cookies = json.loads(st.secrets["linkedin"]["cookies"])
 
-# Twitter API setup
 auth = tweepy.OAuthHandler(twitter_api_key, twitter_api_secret)
 auth.set_access_token(twitter_access_token, twitter_access_token_secret)
 twitter_api = tweepy.API(auth)
 
-# LinkedIn API setup using cookies
 linkedin_api = Linkedin(cookies=linkedin_cookies)
 
-# GoogleNews setup
 googlenews = GoogleNews()
 
-# Streamlit app
 st.title('Keyword-Based Content Fetcher')
 
 keyword = st.text_input('Enter a keyword to search for content:', '')
 
 if keyword:
-    # Fetch news stories from GoogleNews
     googlenews.search(keyword)
     google_news_stories = googlenews.results()
 
-    # Fetch tweets
     tweets = tweepy.Cursor(twitter_api.search_tweets, q=keyword, lang='en').items(10)
-
-    # Fetch LinkedIn posts (example, may require custom API implementation)
+    
     linkedin_posts = linkedin_api.search_posts(keyword)
 
     st.header('Google News Stories')
