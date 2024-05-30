@@ -2,25 +2,15 @@ import streamlit as st
 from GoogleNews import GoogleNews
 import tweepy
 import json
-import requests
-from requests.auth import HTTPBasicAuth
 
 twitter_client_id = st.secrets["twitter"]["client_id"]
 twitter_client_secret = st.secrets["twitter"]["client_secret"]
 
-def get_bearer_token(client_id, client_secret):
-    response = requests.post(
-        "https://api.twitter.com/oauth2/token",
-        auth=HTTPBasicAuth(client_id, client_secret),
-        data={'grant_type': 'client_credentials'}
-    )
-    if response.status_code != 200:
-        raise Exception(f"Cannot get a bearer token (HTTP {response.status_code}): {response.text}")
-    return response.json()['access_token']
-
-bearer_token = get_bearer_token(twitter_client_id, twitter_client_secret)
-
-client = tweepy.Client(bearer_token=bearer_token)
+client = tweepy.Client(
+    consumer_key=twitter_client_id,
+    consumer_secret=twitter_client_secret,
+    bearer_token=None
+)
 
 linkedin_cookies = json.loads(st.secrets["linkedin"]["cookies"])
 
