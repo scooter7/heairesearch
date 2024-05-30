@@ -2,6 +2,7 @@ import streamlit as st
 from GoogleNews import GoogleNews
 import tweepy
 from linkedin_api import Linkedin
+import json
 
 # Access secrets
 twitter_api_key = st.secrets["twitter"]["api_key"]
@@ -9,16 +10,15 @@ twitter_api_secret = st.secrets["twitter"]["api_secret"]
 twitter_access_token = st.secrets["twitter"]["access_token"]
 twitter_access_token_secret = st.secrets["twitter"]["access_token_secret"]
 
-linkedin_email = st.secrets["linkedin"]["email"]
-linkedin_password = st.secrets["linkedin"]["password"]
+linkedin_cookies = json.loads(st.secrets["linkedin"]["cookies"])
 
 # Twitter API setup
 auth = tweepy.OAuthHandler(twitter_api_key, twitter_api_secret)
 auth.set_access_token(twitter_access_token, twitter_access_token_secret)
 twitter_api = tweepy.API(auth)
 
-# LinkedIn API setup
-linkedin_api = Linkedin(linkedin_email, linkedin_password)
+# LinkedIn API setup using cookies
+linkedin_api = Linkedin(cookies=linkedin_cookies)
 
 # GoogleNews setup
 googlenews = GoogleNews()
