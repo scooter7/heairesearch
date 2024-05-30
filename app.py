@@ -21,7 +21,6 @@ if keyword:
         tweets = response.data
     except tweepy.errors.TweepyException as e:
         st.error(f"Error fetching tweets: {e}")
-        st.error(f"Response from Twitter: {response}")
         raise
 
     st.header('Google News Stories')
