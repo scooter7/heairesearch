@@ -2,20 +2,23 @@ import streamlit as st
 from GoogleNews import GoogleNews
 import tweepy
 import requests
-from requests.auth import HTTPBasicAuth
+import base64
 
 twitter_client_id = st.secrets["twitter"]["client_id"]
 twitter_client_secret = st.secrets["twitter"]["client_secret"]
 
 def get_bearer_token(client_id, client_secret):
     url = "https://api.twitter.com/oauth2/token"
+    credentials = f"{client_id}:{client_secret}"
+    encoded_credentials = base64.b64encode(credentials.encode('ascii')).decode('ascii')
     headers = {
-        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+        "Authorization": f"Basic {encoded_credentials}",
+        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
     }
     data = {
         "grant_type": "client_credentials"
     }
-    response = requests.post(url, headers=headers, data=data, auth=(client_id, client_secret))
+    response = requests.post(url, headers=headers, data=data)
     if response.status_code != 200:
         raise Exception(f"Cannot get a bearer token (HTTP {response.status_code}): {response.text}")
     return response.json()['access_token']
