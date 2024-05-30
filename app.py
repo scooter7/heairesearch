@@ -7,10 +7,9 @@ twitter_api_key = st.secrets["twitter"]["api_key"]
 twitter_api_secret = st.secrets["twitter"]["api_secret"]
 twitter_access_token = st.secrets["twitter"]["access_token"]
 twitter_access_token_secret = st.secrets["twitter"]["access_token_secret"]
+twitter_bearer_token = st.secrets["twitter"]["bearer_token"]
 
-auth = tweepy.OAuthHandler(twitter_api_key, twitter_api_secret)
-auth.set_access_token(twitter_access_token, twitter_access_token_secret)
-twitter_api = tweepy.API(auth)
+client = tweepy.Client(bearer_token=twitter_bearer_token)
 
 googlenews = GoogleNews()
 
@@ -22,7 +21,7 @@ if keyword:
     googlenews.search(keyword)
     google_news_stories = googlenews.results()
 
-    tweets = tweepy.Cursor(twitter_api.search_tweets, q=keyword, lang='en').items(10)
+    tweets = client.search_recent_tweets(query=keyword, tweet_fields=['context_annotations', 'created_at'], max_results=10)
 
     st.header('Google News Stories')
     for article in google_news_stories:
@@ -31,6 +30,6 @@ if keyword:
         st.write(f"[Read more]({article['link']})")
 
     st.header('Tweets')
-    for tweet in tweets:
-        st.subheader(f"@{tweet.user.screen_name}")
+    for tweet in tweets.data:
+        st.subheader(f"@{tweet.author_id}")
         st.write(tweet.text)
