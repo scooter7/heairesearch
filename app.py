@@ -8,11 +8,14 @@ twitter_client_id = st.secrets["twitter"]["client_id"]
 twitter_client_secret = st.secrets["twitter"]["client_secret"]
 
 def get_bearer_token(client_id, client_secret):
-    response = requests.post(
-        "https://api.twitter.com/oauth2/token",
-        auth=HTTPBasicAuth(client_id, client_secret),
-        data={'grant_type': 'client_credentials'}
-    )
+    url = "https://api.twitter.com/oauth2/token"
+    headers = {
+        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8",
+    }
+    data = {
+        "grant_type": "client_credentials"
+    }
+    response = requests.post(url, headers=headers, data=data, auth=(client_id, client_secret))
     if response.status_code != 200:
         raise Exception(f"Cannot get a bearer token (HTTP {response.status_code}): {response.text}")
     return response.json()['access_token']
