@@ -1,31 +1,10 @@
 import streamlit as st
 from GoogleNews import GoogleNews
 import tweepy
-import requests
-import base64
 
-twitter_client_id = st.secrets["twitter"]["client_id"]
-twitter_client_secret = st.secrets["twitter"]["client_secret"]
+twitter_bearer_token = st.secrets["twitter"]["bearer_token"]
 
-def get_bearer_token(client_id, client_secret):
-    url = "https://api.twitter.com/oauth2/token"
-    credentials = f"{client_id}:{client_secret}"
-    encoded_credentials = base64.b64encode(credentials.encode('ascii')).decode('ascii')
-    headers = {
-        "Authorization": f"Basic {encoded_credentials}",
-        "Content-Type": "application/x-www-form-urlencoded;charset=UTF-8"
-    }
-    data = {
-        "grant_type": "client_credentials"
-    }
-    response = requests.post(url, headers=headers, data=data)
-    if response.status_code != 200:
-        raise Exception(f"Cannot get a bearer token (HTTP {response.status_code}): {response.text}")
-    return response.json()['access_token']
-
-bearer_token = get_bearer_token(twitter_client_id, twitter_client_secret)
-
-client = tweepy.Client(bearer_token=bearer_token)
+client = tweepy.Client(bearer_token=twitter_bearer_token)
 
 googlenews = GoogleNews()
 
@@ -37,7 +16,11 @@ if keyword:
     googlenews.search(keyword)
     google_news_stories = googlenews.results()
 
-    tweets = client.search_recent_tweets(query=keyword, tweet_fields=['context_annotations', 'created_at'], max_results=10)
+    try:
+        tweets = client.search_recent_tweets(query=keyword, tweet_fields=['context_annotations', 'created_at'], max_results=10)
+    except Exception as e:
+        st.error(f"Error fetching tweets: {e}")
+        raise
 
     st.header('Google News Stories')
     for article in google_news_stories:
@@ -46,6 +29,9 @@ if keyword:
         st.write(f"[Read more]({article['link']})")
 
     st.header('Tweets')
-    for tweet in tweets.data:
-        st.subheader(f"@{tweet.author_id}")
-        st.write(tweet.text)
+    if tweets and tweets.data:
+        for tweet in tweets.data:
+            st.subheader(f"@{tweet.author_id}")
+            st.write(tweet.text)
+    else:
+        st.write("No tweets found.")
