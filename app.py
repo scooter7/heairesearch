@@ -2,9 +2,21 @@ import streamlit as st
 from GoogleNews import GoogleNews
 import tweepy
 
+# Access Twitter credentials from Streamlit secrets
+twitter_api_key = st.secrets["twitter"]["api_key"]
+twitter_api_secret_key = st.secrets["twitter"]["api_secret_key"]
+twitter_access_token = st.secrets["twitter"]["access_token"]
+twitter_access_token_secret = st.secrets["twitter"]["access_token_secret"]
 twitter_bearer_token = st.secrets["twitter"]["bearer_token"]
 
-client = tweepy.Client(bearer_token=twitter_bearer_token)
+# Initialize Tweepy client with all credentials
+client = tweepy.Client(
+    bearer_token=twitter_bearer_token,
+    consumer_key=twitter_api_key,
+    consumer_secret=twitter_api_secret_key,
+    access_token=twitter_access_token,
+    access_token_secret=twitter_access_token_secret
+)
 
 googlenews = GoogleNews()
 
