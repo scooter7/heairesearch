@@ -8,6 +8,8 @@ twitter_api_secret_key = st.secrets["twitter"]["api_secret_key"]
 twitter_access_token = st.secrets["twitter"]["access_token"]
 twitter_access_token_secret = st.secrets["twitter"]["access_token_secret"]
 twitter_bearer_token = st.secrets["twitter"]["bearer_token"]
+twitter_client_id = st.secrets["twitter"]["client_id"]
+twitter_client_secret = st.secrets["twitter"]["client_secret"]
 
 # Initialize Tweepy client with all credentials
 client = tweepy.Client(
@@ -33,6 +35,8 @@ if keyword:
         tweets = response.data
     except tweepy.errors.TweepyException as e:
         st.error(f"Error fetching tweets: {e}")
+        if e.response:
+            st.error(f"Response details: {e.response.status_code} {e.response.text}")
         raise
 
     st.header('Google News Stories')
