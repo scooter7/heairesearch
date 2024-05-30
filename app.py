@@ -17,9 +17,11 @@ if keyword:
     google_news_stories = googlenews.results()
 
     try:
-        tweets = client.search_recent_tweets(query=keyword, tweet_fields=['context_annotations', 'created_at'], max_results=10)
-    except Exception as e:
+        response = client.search_recent_tweets(query=keyword, tweet_fields=['context_annotations', 'created_at'], max_results=10)
+        tweets = response.data
+    except tweepy.errors.TweepyException as e:
         st.error(f"Error fetching tweets: {e}")
+        st.error(f"Response from Twitter: {response}")
         raise
 
     st.header('Google News Stories')
@@ -29,8 +31,8 @@ if keyword:
         st.write(f"[Read more]({article['link']})")
 
     st.header('Tweets')
-    if tweets and tweets.data:
-        for tweet in tweets.data:
+    if tweets:
+        for tweet in tweets:
             st.subheader(f"@{tweet.author_id}")
             st.write(tweet.text)
     else:
